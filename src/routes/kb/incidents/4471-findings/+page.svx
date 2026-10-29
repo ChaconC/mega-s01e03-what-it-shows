@@ -1,0 +1,104 @@
+---
+layout: runbook
+title: '#4471 reviewed: separate the causes'
+owner: Carlos Chacón
+status: reviewed
+reviewed: '2026-10-28'
+signature: "v1.eyJzdWIiOiI1MzI1IiwiYXVkIjoiY2hhbGxlbmdlOndoYXQtaXQtc2hvd3MiLCJpYXQiOjE3OTMyMzg1ODgsImV4cCI6MTc5MzMyNDk4OH0.sMpJ8XY-pj89Km3VsUaumAB4OpaiYTodmpNOfn41MHU"
+---
+
+<script>
+  import CauseTable from '#lib/kb/CauseTable.svelte';
+  import QueueTimeline from '#lib/kb/QueueTimeline.svelte';
+  import DedupeExplorer from '#lib/kb/DedupeExplorer.svelte';
+  import ExportSummary from '#lib/kb/ExportSummary.svelte';
+  import RenderStamp from '#lib/kb/RenderStamp.svelte';
+  import Callout from '#lib/kb/Callout.svelte';
+</script>
+
+The [original incident page](/kb/incidents/4471/) calls this one known issue with one fix queued.
+Its rendered evidence separates a shared parser defect from a booking-form hint defect.
+Track and verify those fixes independently.
+
+<Callout>
+This review covers the support KB export dated 4 October 2026. The desk continues to work.
+These are snapshot findings, not a claim about the current queue or release status.
+</Callout>
+
+## Count reports once, then classify by tenant
+
+<ExportSummary />
+
+The table runs the supplied classification logic. It uses the tenant's locale, booking-form
+version and report channel. Browser locale and intake tags are intake guesses; they do not
+determine the cause. Each report stays in exactly one group.
+
+<!-- svelte-ignore a11y_no_noninteractive_tabindex (Keyboard users need to focus this horizontal scroll region.) -->
+<div class="table-scroll" role="region" aria-label="Report counts by cause" tabindex="0">
+  <CauseTable ticket={4471} />
+</div>
+
+## File separate fixes
+
+### Shared parser: month-first interpretation
+
+For day-first tenants, the shared parser reads ambiguous dates month-first. R-41200 reports
+an intended 7 April appearing as 4 July; R-41201 reports the reverse. The expected behavior
+is to retain the intended date according to an explicit input contract.
+
+See the [parser issue draft](../../../../issue-drafts/parser-issue.md). Verify the affected
+input paths across tenant locales, with month-first inputs as controls. The export documents
+reported symptoms and classification; it does not include a production parser to reproduce live.
+
+### Booking-v3 form: hint and parser disagree
+
+The form prints MM/DD/YYYY for day-first tenants while reading their input in tenant order.
+A person following that hint can therefore get a swapped date even when tenant-aware parsing
+works as designed. The affected tenant configurations are alder.physio, copper.studio and
+pale.harbour. R-41230, R-41241 and R-41251 illustrate this path.
+
+See the [form-hint issue draft](../../../../issue-drafts/hint-issue.md). Align the displayed hint
+and accepted format, then verify booking-v3 separately from the shared parser. Include
+booking-v2 and month-first locales as controls.
+
+## Keep the timing anomalies visible
+
+The desk's notes flag R-41202, R-41209, R-41236, R-41344 and R-41620. Their bodies describe
+one-day differences, an invite apparently preceding a booking, or different days across locations.
+They remain counted in the parser group under the supplied tenant-based classifier.
+
+That filing rule does not prove their underlying cause. Preserve those report IDs for follow-up;
+do not double-count them, subtract them silently, or call them a confirmed timezone defect.
+Check original timestamps, timezone handling and reproduction evidence before deciding whether
+another ticket is warranted.
+
+## The queue did not begin with the merge
+
+<QueueTimeline ticket={4471} />
+
+Reports arrived before the large July merge and continued afterward. A spike in merges
+describes desk activity, not necessarily a new product incident. The fact that an issue is
+labelled known does not establish that it has been fixed or that reporting has stopped.
+
+## Change the triage decision through a new record
+
+[Decision 0001](/kb/decisions/0001-dedupe-by-subject/) and the
+[triage page](/kb/triage/dedupe/) were reviewed in June 2024. They tell the desk to merge
+on matching subjects. The interactive examples below show why that rule loses information:
+the same subject can hide different causes, and different subjects can describe one cause.
+
+<DedupeExplorer />
+
+Proposed replacement: compare tenant context, input path and evidence before merging.
+Unknown tenants or unexplained symptoms need investigation rather than an automatic merge.
+Keep the accepted historical decision intact. Record any replacement in a new decision record
+after the desk accepts it, then update the triage guidance and review date together.
+
+## Evidence and follow-up
+
+- Counts and groups: reports-4471.json, tenant configuration files, causes.ts and locales.ts.
+- Timing caveats: desk-notes.json and the original report bodies.
+- Queue history: receivedAt and mergedAt, rendered by QueueTimeline.
+- Recheck the live desk before implementation and again before declaring either issue resolved.
+
+<RenderStamp {signature} />
