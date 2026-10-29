@@ -30,3 +30,9 @@ The shared month-first parser problem is a distinct input path. A day-first book
 - `src/lib/kb/causes.ts`, `locales.ts`, `DedupeExplorer.svelte`
 
 Counts describe the downloaded export, not an independently verified live desk state.
+
+## Engineering disposition, 5 October
+
+The course engineering update reports #4471 closed on 5 October and the hint issue WON'T FIX because booking-v3 was retired. This ticket closes as not planned, not as a corrected hint.
+
+Source: https://hq.mega.dev/challenges/what-it-shows (engineering update). The export counts remain historical impact evidence. No live product reproduction was available for independent deployment verification.

@@ -33,3 +33,9 @@ Five reports counted in this group were separately noted by the desk: R-41202, R
 - `src/lib/kb/causes.ts`, `locales.ts`, `CauseTable.svelte`
 
 Counts describe the downloaded export, not an independently verified live desk state.
+
+## Engineering disposition, 5 October
+
+The course engineering update reports #4471 closed on 5 October and the parser FIXED: `fix(dates): parse dd/mm for eu locales`. This ticket closes as completed based on that desk update.
+
+Source: https://hq.mega.dev/challenges/what-it-shows (engineering update). The export counts remain historical impact evidence. No live product reproduction was available for independent deployment verification.

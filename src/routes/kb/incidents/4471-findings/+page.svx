@@ -2,7 +2,7 @@
 layout: runbook
 title: '#4471 reviewed: separate the causes'
 owner: Carlos Chacón
-status: reviewed
+status: closed
 reviewed: '2026-10-28'
 signature: "v1.eyJzdWIiOiI1MzI1IiwiYXVkIjoiY2hhbGxlbmdlOndoYXQtaXQtc2hvd3MiLCJpYXQiOjE3OTMyMzg1ODgsImV4cCI6MTc5MzMyNDk4OH0.sMpJ8XY-pj89Km3VsUaumAB4OpaiYTodmpNOfn41MHU"
 ---
@@ -18,12 +18,26 @@ signature: "v1.eyJzdWIiOiI1MzI1IiwiYXVkIjoiY2hhbGxlbmdlOndoYXQtaXQtc2hvd3MiLCJpY
 
 The [original incident page](/kb/incidents/4471/) calls this one known issue with one fix queued.
 Its rendered evidence separates a shared parser defect from a booking-form hint defect.
-Track and verify those fixes independently.
+Their different final dispositions are recorded below.
 
 <Callout>
 This review covers the support KB export dated 4 October 2026. The desk continues to work.
-These are snapshot findings, not a claim about the current queue or release status.
+The counts below remain the export snapshot. The subsequent engineering update is recorded separately.
 </Callout>
+
+## Engineering disposition: 5 October
+
+The [course engineering update](https://hq.mega.dev/challenges/what-it-shows) now reports
+that #4471 closed on 5 October:
+
+- [Parser ticket](https://github.com/ChaconC/mega-s01e03-what-it-shows/issues/1): fixed,
+  `fix(dates): parse dd/mm for eu locales`. Close as completed.
+- [Form-hint ticket](https://github.com/ChaconC/mega-s01e03-what-it-shows/issues/2): won't fix,
+  because booking-v3 was retired. Close as not planned; this is not a claim that its hint was corrected.
+
+These dispositions come from the course's desk update. The export contains no product patch
+or live reproduction environment, so this review does not independently verify a deployed fix.
+The original report counts remain useful as historical impact evidence.
 
 ## Count reports once, then classify by tenant
 
@@ -46,7 +60,7 @@ For day-first tenants, the shared parser reads ambiguous dates month-first. R-41
 an intended 7 April appearing as 4 July; R-41201 reports the reverse. The expected behavior
 is to retain the intended date according to an explicit input contract.
 
-See the [parser issue draft](../../../../issue-drafts/parser-issue.md). Verify the affected
+See the [parser ticket](https://github.com/ChaconC/mega-s01e03-what-it-shows/issues/1). Verify the affected
 input paths across tenant locales, with month-first inputs as controls. The export documents
 reported symptoms and classification; it does not include a production parser to reproduce live.
 
@@ -57,7 +71,7 @@ A person following that hint can therefore get a swapped date even when tenant-a
 works as designed. The affected tenant configurations are alder.physio, copper.studio and
 pale.harbour. R-41230, R-41241 and R-41251 illustrate this path.
 
-See the [form-hint issue draft](../../../../issue-drafts/hint-issue.md). Align the displayed hint
+See the [form-hint ticket](https://github.com/ChaconC/mega-s01e03-what-it-shows/issues/2). Align the displayed hint
 and accepted format, then verify booking-v3 separately from the shared parser. Include
 booking-v2 and month-first locales as controls.
 
@@ -99,6 +113,6 @@ after the desk accepts it, then update the triage guidance and review date toget
 - Counts and groups: reports-4471.json, tenant configuration files, causes.ts and locales.ts.
 - Timing caveats: desk-notes.json and the original report bodies.
 - Queue history: receivedAt and mergedAt, rendered by QueueTimeline.
-- Recheck the live desk before implementation and again before declaring either issue resolved.
+- Closure source: the course engineering update above. Preserve the timing caveats if related reports recur.
 
 <RenderStamp {signature} />
